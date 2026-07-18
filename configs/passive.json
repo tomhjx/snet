@@ -1,0 +1,10 @@
+{
+  "mode": "sniff",
+  "capture_mode": "passive",
+  "iface": "",
+  "format": "json",
+  "fields": "",
+  "sniff_mode": "full",
+  "protocols": "all",
+  "body_limit": 65536
+}

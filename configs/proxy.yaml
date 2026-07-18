@@ -1,0 +1,8 @@
+mode: sniff
+capture_mode: proxy
+listen: :8080
+format: json
+fields: ""
+sniff_mode: full
+protocols: https
+body_limit: 65536

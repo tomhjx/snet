@@ -1,0 +1,9 @@
+mode: probe
+probe_targets: example.com:80,example.org:80
+protocols: ip,domain,tcp,http
+format: json
+fields: ""
+probe_timeout: 5s
+probe_interval: 0s
+probe_payload: ping
+count: 1

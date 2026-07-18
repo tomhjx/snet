@@ -1,0 +1,16 @@
+# Build artifacts
+bin/
+/snet
+
+# Local certificates and runtime files
+.snet/
+*.sock
+
+# OS/editor noise
+.DS_Store
+.idea/
+.vscode/
+
+# Test and coverage output
+coverage.out
+*.test

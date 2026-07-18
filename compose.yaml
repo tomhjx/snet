@@ -1,0 +1,76 @@
+name: snet
+
+x-snet-base: &snet-base
+  build:
+    context: .
+    dockerfile: Dockerfile
+  image: ${IMAGE:-tomhjx/snet:local}
+  volumes:
+    - type: volume
+      source: snet-ca
+      target: /root/.snet
+    - type: bind
+      source: ./configs
+      target: /etc/snet
+      read_only: true
+  restart: unless-stopped
+
+services:
+  snet:
+    <<: *snet-base
+    container_name: snet
+    network_mode: host
+    cap_add:
+      - NET_RAW
+      - NET_ADMIN
+    command:
+      - -config
+      - ${CONFIG:-/etc/snet/passive.json}
+      - -iface
+      - ${IFACE:-}
+      - -f
+      - ${FORMAT:-json}
+      - -m
+      - ${SNIFF_MODE:-full}
+
+  snet-proxy:
+    <<: *snet-base
+    profiles: ["proxy"]
+    container_name: snet-proxy
+    command:
+      - -config
+      - ${PROXY_CONFIG:-/etc/snet/proxy.yaml}
+      - -f
+      - ${FORMAT:-json}
+      - -m
+      - ${SNIFF_MODE:-full}
+    ports:
+      - "${HTTPS_PROXY_PORT:-8080}:8080"
+
+  probe:
+    <<: *snet-base
+    profiles: ["probe"]
+    container_name: snet-probe
+    restart: "no"
+    command:
+      - -config
+      - ${PROBE_CONFIG:-/etc/snet/probe.yaml}
+      - -mode
+      - probe
+      - -targets
+      - ${TARGETS:-example.com:80,example.org:80}
+      - -P
+      - ${PROTOCOLS:-ip,domain,tcp,http}
+      - -f
+      - ${FORMAT:-json}
+      - -probe-interval
+      - ${PROBE_INTERVAL:-0s}
+      - -count
+      - ${PROBE_COUNT:-1}
+      - -probe-timeout
+      - ${PROBE_TIMEOUT:-5s}
+      - -probe-payload
+      - ${PROBE_PAYLOAD:-ping}
+
+volumes:
+  snet-ca:
